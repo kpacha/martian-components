@@ -1,54 +1,29 @@
 package json_schema
 
 import (
-	"bytes"
-	"errors"
-	"io"
-	"io/ioutil"
-	"strings"
-
-	"github.com/xeipuuv/gojsonschema"
+	"github.com/google/martian/parse"
+	"github.com/kpacha/martian-components/body/json-schema/verifier"
 )
 
-type Verifier struct {
-	schema *gojsonschema.Schema
+func init() {
+	parse.Register("body.JSON-SCHEMA.Request", RequestVerifierFromJSON)
+	parse.Register("body.JSON-SCHEMA.Response", ResponseVerifierFromJSON)
 }
 
-func (v *Verifier) Validate(data []byte) error {
-	result, err := v.schema.Validate(gojsonschema.NewBytesLoader(data))
-	if err != nil {
-		return err
-	}
-
-	if !result.Valid() {
-		errs := make([]string, len(result.Errors()))
-		for i, desc := range result.Errors() {
-			errs[i] = desc.String()
-		}
-		return errors.New(strings.Join(errs, "/n"))
-	}
-
-	return nil
-}
-
-func VerifierFromJSON(b []byte) (*Verifier, error) {
-	schema, err := gojsonschema.NewSchema(gojsonschema.NewBytesLoader(b))
+func RequestVerifierFromJSON(b []byte) (*parse.Result, error) {
+	v, err := verifier.RequestVerifierFromJSON(b)
 	if err != nil {
 		return nil, err
 	}
 
-	return &Verifier{schema}, nil
+	return parse.NewResult(v, []parse.ModifierType{parse.Request})
 }
 
-const MIMEJSON = "application/json"
-
-func readBody(body *io.ReadCloser) ([]byte, error) {
-	data, err := ioutil.ReadAll(*body)
+func ResponseVerifierFromJSON(b []byte) (*parse.Result, error) {
+	v, err := verifier.ResponseVerifierFromJSON(b)
 	if err != nil {
-		return data, err
+		return nil, err
 	}
 
-	(*body).Close()
-	*body = ioutil.NopCloser(bytes.NewBuffer(data))
-	return data, nil
+	return parse.NewResult(v, []parse.ModifierType{parse.Response})
 }

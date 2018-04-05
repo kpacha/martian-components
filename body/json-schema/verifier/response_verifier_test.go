@@ -1,4 +1,4 @@
-package json_schema
+package verifier
 
 import (
 	"bytes"
@@ -14,13 +14,13 @@ func ExampleResponseVerifier() {
 		fmt.Println(err.Error())
 	}
 
-	fmt.Println(verifier.ResponseModifier().ModifyResponse(newResponse(`{"firstName": "foo", "lastName": "bar", "age": 42}`)))
-	fmt.Println(verifier.ResponseModifier().ModifyResponse(newResponse(`{"firstName": "foo", "lastName": 1, "age": 42}`)))
-	fmt.Println(verifier.ResponseModifier().ModifyResponse(newResponse(`{"firstName": "foo", "age": 42}`)))
-	fmt.Println(verifier.ResponseModifier().ModifyResponse(newResponse(`{"firstName": "foo", "lastName": "bar", "age": -42}`)))
-	fmt.Println(verifier.ResponseModifier().ModifyResponse(newResponse(`{`)))
-	fmt.Println(verifier.ResponseModifier().ModifyResponse(&http.Response{Body: ioutil.NopCloser(bytes.NewBufferString("{"))}))
-	fmt.Println(verifier.ResponseModifier().ModifyResponse(&http.Response{Header: http.Header{"Content-Type": []string{MIMEJSON}}}))
+	fmt.Println(verifier.ModifyResponse(newResponse(`{"firstName": "foo", "lastName": "bar", "age": 42}`)))
+	fmt.Println(verifier.ModifyResponse(newResponse(`{"firstName": "foo", "lastName": 1, "age": 42}`)))
+	fmt.Println(verifier.ModifyResponse(newResponse(`{"firstName": "foo", "age": 42}`)))
+	fmt.Println(verifier.ModifyResponse(newResponse(`{"firstName": "foo", "lastName": "bar", "age": -42}`)))
+	fmt.Println(verifier.ModifyResponse(newResponse(`{`)))
+	fmt.Println(verifier.ModifyResponse(&http.Response{Body: ioutil.NopCloser(bytes.NewBufferString("{"))}))
+	fmt.Println(verifier.ModifyResponse(&http.Response{Header: http.Header{"Content-Type": []string{MIMEJSON}}}))
 
 	// Output:
 	// <nil>
@@ -41,18 +41,16 @@ func newResponse(body string) *http.Response {
 
 func BenchmarkResponseVerifier_ModifyResponse_ok(b *testing.B) {
 	verifier, _ := ResponseVerifierFromJSON(sampleConfig)
-	rm := verifier.ResponseModifier()
 	res := newResponse(`{"firstName": "foo", "lastName": "bar", "age": 42}`)
 	for i := 0; i < b.N; i++ {
-		rm.ModifyResponse(res)
+		verifier.ModifyResponse(res)
 	}
 }
 
 func BenchmarkResponseVerifier_ModifyResponse_ko(b *testing.B) {
 	verifier, _ := ResponseVerifierFromJSON(sampleConfig)
-	rm := verifier.ResponseModifier()
 	res := newResponse(`{"firstName": "foo", "lastName": "bar", "age": -42}`)
 	for i := 0; i < b.N; i++ {
-		rm.ModifyResponse(res)
+		verifier.ModifyResponse(res)
 	}
 }

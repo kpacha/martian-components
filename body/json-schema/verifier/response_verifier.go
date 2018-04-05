@@ -1,17 +1,11 @@
-package json_schema
+package verifier
 
 import (
 	"errors"
 	"net/http"
-
-	"github.com/google/martian/parse"
 )
 
 var ErrNoJSONResponse = errors.New("response is not a json message")
-
-func init() {
-	parse.Register("body.JSON-SCHEMA.Response", ResponseVerifierFromJSON)
-}
 
 type ResponseVerifier struct {
 	Verifier
@@ -31,11 +25,11 @@ func (m *ResponseVerifier) ModifyResponse(res *http.Response) error {
 	return m.Validate(data)
 }
 
-func ResponseVerifierFromJSON(b []byte) (*parse.Result, error) {
+func ResponseVerifierFromJSON(b []byte) (*ResponseVerifier, error) {
 	v, err := VerifierFromJSON(b)
 	if err != nil {
 		return nil, err
 	}
 
-	return parse.NewResult(&ResponseVerifier{*v}, []parse.ModifierType{parse.Response})
+	return &ResponseVerifier{*v}, nil
 }

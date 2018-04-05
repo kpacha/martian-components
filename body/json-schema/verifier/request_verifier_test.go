@@ -1,4 +1,4 @@
-package json_schema
+package verifier
 
 import (
 	"bytes"
@@ -14,13 +14,13 @@ func ExampleRequestVerifier() {
 		fmt.Println(err.Error())
 	}
 
-	fmt.Println(verifier.RequestModifier().ModifyRequest(newRequest(`{"firstName": "foo", "lastName": "bar", "age": 42}`)))
-	fmt.Println(verifier.RequestModifier().ModifyRequest(newRequest(`{"firstName": "foo", "lastName": 1, "age": 42}`)))
-	fmt.Println(verifier.RequestModifier().ModifyRequest(newRequest(`{"firstName": "foo", "age": 42}`)))
-	fmt.Println(verifier.RequestModifier().ModifyRequest(newRequest(`{"firstName": "foo", "lastName": "bar", "age": -42}`)))
-	fmt.Println(verifier.RequestModifier().ModifyRequest(newRequest("{")))
-	fmt.Println(verifier.RequestModifier().ModifyRequest(&http.Request{Body: ioutil.NopCloser(bytes.NewBufferString("{"))}))
-	fmt.Println(verifier.RequestModifier().ModifyRequest(&http.Request{Header: http.Header{"Content-Type": []string{MIMEJSON}}}))
+	fmt.Println(verifier.ModifyRequest(newRequest(`{"firstName": "foo", "lastName": "bar", "age": 42}`)))
+	fmt.Println(verifier.ModifyRequest(newRequest(`{"firstName": "foo", "lastName": 1, "age": 42}`)))
+	fmt.Println(verifier.ModifyRequest(newRequest(`{"firstName": "foo", "age": 42}`)))
+	fmt.Println(verifier.ModifyRequest(newRequest(`{"firstName": "foo", "lastName": "bar", "age": -42}`)))
+	fmt.Println(verifier.ModifyRequest(newRequest("{")))
+	fmt.Println(verifier.ModifyRequest(&http.Request{Body: ioutil.NopCloser(bytes.NewBufferString("{"))}))
+	fmt.Println(verifier.ModifyRequest(&http.Request{Header: http.Header{"Content-Type": []string{MIMEJSON}}}))
 
 	// Output:
 	// <nil>
@@ -40,18 +40,16 @@ func newRequest(body string) *http.Request {
 
 func BenchmarkRequestVerifier_ModifyRequest_ok(b *testing.B) {
 	verifier, _ := RequestVerifierFromJSON(sampleConfig)
-	rm := verifier.RequestModifier()
 	req := newRequest(`{"firstName": "foo", "lastName": "bar", "age": 42}`)
 	for i := 0; i < b.N; i++ {
-		rm.ModifyRequest(req)
+		verifier.ModifyRequest(req)
 	}
 }
 
 func BenchmarkRequestVerifier_ModifyRequest_ko(b *testing.B) {
 	verifier, _ := RequestVerifierFromJSON(sampleConfig)
-	rm := verifier.RequestModifier()
 	req := newRequest(`{"firstName": "foo", "lastName": "bar", "age": -42}`)
 	for i := 0; i < b.N; i++ {
-		rm.ModifyRequest(req)
+		verifier.ModifyRequest(req)
 	}
 }
