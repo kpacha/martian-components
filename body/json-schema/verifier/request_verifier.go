@@ -3,6 +3,7 @@ package verifier
 import (
 	"errors"
 	"net/http"
+	"strings"
 )
 
 var ErrNoJSONRequest = errors.New("request is not a json message")
@@ -13,7 +14,7 @@ type RequestVerifier struct {
 
 // ModifyRequest verifies the body of the response with the given JSON verifier.
 func (m *RequestVerifier) ModifyRequest(req *http.Request) error {
-	if contentType := req.Header.Get("Content-Type"); contentType != MIMEJSON || req.Body == nil {
+	if !strings.HasPrefix(req.Header.Get("Content-Type"), MIMEJSON) || req.Body == nil {
 		return ErrNoJSONRequest
 	}
 
