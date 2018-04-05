@@ -1,13 +1,14 @@
 package json_schema
 
 import (
+	"bytes"
 	"errors"
+	"io"
+	"io/ioutil"
 	"strings"
 
 	"github.com/xeipuuv/gojsonschema"
 )
-
-const MIMEJSON = "application/json"
 
 type Verifier struct {
 	schema *gojsonschema.Schema
@@ -37,4 +38,17 @@ func VerifierFromJSON(b []byte) (*Verifier, error) {
 	}
 
 	return &Verifier{schema}, nil
+}
+
+const MIMEJSON = "application/json"
+
+func readBody(body *io.ReadCloser) ([]byte, error) {
+	data, err := ioutil.ReadAll(*body)
+	if err != nil {
+		return data, err
+	}
+
+	(*body).Close()
+	*body = ioutil.NopCloser(bytes.NewBuffer(data))
+	return data, nil
 }

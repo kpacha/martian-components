@@ -1,27 +1,12 @@
 package json_schema
 
-import "fmt"
+import (
+	"fmt"
+	"testing"
+)
 
 func ExampleVerifier() {
-	cfg := `{
-    "title": "Person",
-    "type": "object",
-    "properties": {
-        "firstName": {
-            "type": "string"
-        },
-        "lastName": {
-            "type": "string"
-        },
-        "age": {
-            "description": "Age in years",
-            "type": "integer",
-            "minimum": 0
-        }
-    },
-    "required": ["firstName", "lastName"]
-}`
-	verifier, err := VerifierFromJSON([]byte(cfg))
+	verifier, err := VerifierFromJSON(sampleConfig)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
@@ -39,3 +24,38 @@ func ExampleVerifier() {
 	// age: Must be greater than or equal to 0
 	// unexpected EOF
 }
+
+func BenchmarkVerifier_ok(b *testing.B) {
+	verifier, _ := VerifierFromJSON(sampleConfig)
+	data := []byte(`{"firstName": "foo", "lastName": "bar", "age": 42}`)
+	for i := 0; i < b.N; i++ {
+		verifier.Validate(data)
+	}
+}
+
+func BenchmarkVerifier_ko(b *testing.B) {
+	verifier, _ := VerifierFromJSON(sampleConfig)
+	data := []byte(`{"firstName": "foo", "lastName": "bar", "age": -42}`)
+	for i := 0; i < b.N; i++ {
+		verifier.Validate(data)
+	}
+}
+
+var sampleConfig = []byte(`{
+    "title": "Person",
+    "type": "object",
+    "properties": {
+        "firstName": {
+            "type": "string"
+        },
+        "lastName": {
+            "type": "string"
+        },
+        "age": {
+            "description": "Age in years",
+            "type": "integer",
+            "minimum": 0
+        }
+    },
+    "required": ["firstName", "lastName"]
+}`)

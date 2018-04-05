@@ -5,28 +5,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"testing"
 )
 
 func ExampleResponseVerifier() {
-	cfg := `{
-    "title": "Person",
-    "type": "object",
-    "properties": {
-        "firstName": {
-            "type": "string"
-        },
-        "lastName": {
-            "type": "string"
-        },
-        "age": {
-            "description": "Age in years",
-            "type": "integer",
-            "minimum": 0
-        }
-    },
-    "required": ["firstName", "lastName"]
-}`
-	verifier, err := ResponseVerifierFromJSON([]byte(cfg))
+	verifier, err := ResponseVerifierFromJSON(sampleConfig)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
@@ -53,5 +36,23 @@ func newResponse(body string) *http.Response {
 	return &http.Response{
 		Body:   ioutil.NopCloser(bytes.NewBufferString(body)),
 		Header: http.Header{"Content-Type": []string{MIMEJSON}},
+	}
+}
+
+func BenchmarkResponseVerifier_ModifyResponse_ok(b *testing.B) {
+	verifier, _ := ResponseVerifierFromJSON(sampleConfig)
+	rm := verifier.ResponseModifier()
+	res := newResponse(`{"firstName": "foo", "lastName": "bar", "age": 42}`)
+	for i := 0; i < b.N; i++ {
+		rm.ModifyResponse(res)
+	}
+}
+
+func BenchmarkResponseVerifier_ModifyResponse_ko(b *testing.B) {
+	verifier, _ := ResponseVerifierFromJSON(sampleConfig)
+	rm := verifier.ResponseModifier()
+	res := newResponse(`{"firstName": "foo", "lastName": "bar", "age": -42}`)
+	for i := 0; i < b.N; i++ {
+		rm.ModifyResponse(res)
 	}
 }

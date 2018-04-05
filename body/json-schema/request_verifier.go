@@ -1,9 +1,7 @@
 package json_schema
 
 import (
-	"bytes"
 	"errors"
-	"io/ioutil"
 	"net/http"
 
 	"github.com/google/martian/parse"
@@ -12,7 +10,7 @@ import (
 var ErrNoJSONRequest = errors.New("request is not a json message")
 
 func init() {
-	parse.Register("body.REQUEST-JSON-SCHEMA", RequestVerifierFromJSON)
+	parse.Register("body.JSON-SCHEMA.Request", RequestVerifierFromJSON)
 }
 
 type RequestVerifier struct {
@@ -25,13 +23,10 @@ func (m *RequestVerifier) ModifyRequest(req *http.Request) error {
 		return ErrNoJSONRequest
 	}
 
-	data, err := ioutil.ReadAll(req.Body)
+	data, err := readBody(&(req.Body))
 	if err != nil {
 		return err
 	}
-
-	req.Body.Close()
-	req.Body = ioutil.NopCloser(bytes.NewBuffer(data))
 
 	return m.Validate(data)
 }

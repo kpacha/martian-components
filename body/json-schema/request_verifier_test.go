@@ -5,28 +5,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"testing"
 )
 
 func ExampleRequestVerifier() {
-	cfg := `{
-    "title": "Person",
-    "type": "object",
-    "properties": {
-        "firstName": {
-            "type": "string"
-        },
-        "lastName": {
-            "type": "string"
-        },
-        "age": {
-            "description": "Age in years",
-            "type": "integer",
-            "minimum": 0
-        }
-    },
-    "required": ["firstName", "lastName"]
-}`
-	verifier, err := RequestVerifierFromJSON([]byte(cfg))
+	verifier, err := RequestVerifierFromJSON(sampleConfig)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
@@ -53,4 +36,22 @@ func newRequest(body string) *http.Request {
 	req, _ := http.NewRequest("POST", "/", ioutil.NopCloser(bytes.NewBufferString(body)))
 	req.Header.Set("Content-Type", MIMEJSON)
 	return req
+}
+
+func BenchmarkRequestVerifier_ModifyRequest_ok(b *testing.B) {
+	verifier, _ := RequestVerifierFromJSON(sampleConfig)
+	rm := verifier.RequestModifier()
+	req := newRequest(`{"firstName": "foo", "lastName": "bar", "age": 42}`)
+	for i := 0; i < b.N; i++ {
+		rm.ModifyRequest(req)
+	}
+}
+
+func BenchmarkRequestVerifier_ModifyRequest_ko(b *testing.B) {
+	verifier, _ := RequestVerifierFromJSON(sampleConfig)
+	rm := verifier.RequestModifier()
+	req := newRequest(`{"firstName": "foo", "lastName": "bar", "age": -42}`)
+	for i := 0; i < b.N; i++ {
+		rm.ModifyRequest(req)
+	}
 }
