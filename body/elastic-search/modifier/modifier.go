@@ -1,4 +1,6 @@
-package body
+// Package modifier exposes a request modifier for generating parametrized queries
+// to an elastic search service
+package modifier
 
 import (
 	"bytes"
@@ -8,10 +10,6 @@ import (
 
 	"github.com/google/martian/parse"
 )
-
-func init() {
-	parse.Register("body.ESQuery", modifierFromJSON)
-}
 
 type ESQueryModifier struct {
 	Keys []string `json:"keys"`
@@ -49,7 +47,7 @@ func (m *ESQueryModifier) ModifyRequest(req *http.Request) error {
 	return nil
 }
 
-func modifierFromJSON(b []byte) (*parse.Result, error) {
+func FromJSON(b []byte) (*parse.Result, error) {
 	msg := &ESQueryModifier{}
 	if err := json.Unmarshal(b, msg); err != nil {
 		return nil, err

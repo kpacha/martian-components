@@ -1,4 +1,4 @@
-package body
+package modifier
 
 import (
 	"bytes"
@@ -11,7 +11,7 @@ import (
 
 func TestESQueryModifier(t *testing.T) {
 	cfg := `{"keys":["foo","bar","x"]}`
-	modifier, err := modifierFromJSON([]byte(cfg))
+	modifier, err := FromJSON([]byte(cfg))
 	if err != nil {
 		t.Error(err)
 		return
@@ -70,7 +70,7 @@ func TestESQueryModifier(t *testing.T) {
 }
 
 func TestESQueryModifier_badDSL(t *testing.T) {
-	if _, err := modifierFromJSON([]byte(`"x"]}`)); err == nil {
+	if _, err := FromJSON([]byte(`"x"]}`)); err == nil {
 		t.Errorf("error expected")
 	}
 }
