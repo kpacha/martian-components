@@ -5,8 +5,8 @@ import (
 	"testing"
 )
 
-func ExampleVerifier() {
-	verifier, err := VerifierFromJSON(sampleConfig)
+func Example_verifier() {
+	verifier, err := verifierFromJSON(sampleConfig)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
@@ -25,16 +25,16 @@ func ExampleVerifier() {
 	// unexpected EOF
 }
 
-func BenchmarkVerifier_ok(b *testing.B) {
-	verifier, _ := VerifierFromJSON(sampleConfig)
+func Benchmark_verifier_ok(b *testing.B) {
+	verifier, _ := verifierFromJSON(sampleConfig)
 	data := []byte(`{"firstName": "foo", "lastName": "bar", "age": 42}`)
 	for i := 0; i < b.N; i++ {
 		verifier.Validate(data)
 	}
 }
 
-func BenchmarkVerifier_ko(b *testing.B) {
-	verifier, _ := VerifierFromJSON(sampleConfig)
+func Benchmark_verifier_ko(b *testing.B) {
+	verifier, _ := verifierFromJSON(sampleConfig)
 	data := []byte(`{"firstName": "foo", "lastName": "bar", "age": -42}`)
 	for i := 0; i < b.N; i++ {
 		verifier.Validate(data)
