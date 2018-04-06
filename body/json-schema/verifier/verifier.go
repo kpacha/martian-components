@@ -1,3 +1,4 @@
+// Package verifier exposes a json-schema verifier for http request and response bodies
 package verifier
 
 import (
@@ -10,11 +11,11 @@ import (
 	"github.com/xeipuuv/gojsonschema"
 )
 
-type Verifier struct {
+type verifier struct {
 	schema *gojsonschema.Schema
 }
 
-func (v *Verifier) Validate(data []byte) error {
+func (v *verifier) Validate(data []byte) error {
 	result, err := v.schema.Validate(gojsonschema.NewBytesLoader(data))
 	if err != nil {
 		return err
@@ -31,13 +32,13 @@ func (v *Verifier) Validate(data []byte) error {
 	return nil
 }
 
-func VerifierFromJSON(b []byte) (*Verifier, error) {
+func verifierFromJSON(b []byte) (*verifier, error) {
 	schema, err := gojsonschema.NewSchema(gojsonschema.NewBytesLoader(b))
 	if err != nil {
 		return nil, err
 	}
 
-	return &Verifier{schema}, nil
+	return &verifier{schema}, nil
 }
 
 const MIMEJSON = "application/json"

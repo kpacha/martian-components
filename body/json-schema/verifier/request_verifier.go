@@ -9,7 +9,7 @@ import (
 var ErrNoJSONRequest = errors.New("request is not a json message")
 
 type RequestVerifier struct {
-	Verifier
+	verifier
 }
 
 // ModifyRequest verifies the body of the response with the given JSON verifier.
@@ -27,7 +27,7 @@ func (m *RequestVerifier) ModifyRequest(req *http.Request) error {
 }
 
 func RequestVerifierFromJSON(b []byte) (*RequestVerifier, error) {
-	v, err := VerifierFromJSON(b)
+	v, err := verifierFromJSON(b)
 	if err != nil {
 		return nil, err
 	}
