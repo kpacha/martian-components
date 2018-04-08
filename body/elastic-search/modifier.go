@@ -8,5 +8,14 @@ import (
 )
 
 func init() {
-	parse.Register("body.ESQuery", modifier.FromJSON)
+	parse.Register("body.ESQuery", FromJSON)
+}
+
+func FromJSON(b []byte) (*parse.Result, error) {
+	msg, err := modifier.FromJSON(b)
+	if err != nil {
+		return nil, err
+	}
+
+	return parse.NewResult(msg, []parse.ModifierType{parse.Request})
 }

@@ -7,8 +7,6 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-
-	"github.com/google/martian/parse"
 )
 
 type ESQueryModifier struct {
@@ -47,11 +45,11 @@ func (m *ESQueryModifier) ModifyRequest(req *http.Request) error {
 	return nil
 }
 
-func FromJSON(b []byte) (*parse.Result, error) {
+func FromJSON(b []byte) (*ESQueryModifier, error) {
 	msg := &ESQueryModifier{}
 	if err := json.Unmarshal(b, msg); err != nil {
 		return nil, err
 	}
 
-	return parse.NewResult(msg, []parse.ModifierType{parse.Request})
+	return msg, nil
 }
