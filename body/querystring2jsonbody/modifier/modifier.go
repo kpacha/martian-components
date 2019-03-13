@@ -34,7 +34,9 @@ func (m *Query2BodyModifier) ModifyRequest(req *http.Request) error {
 		query.Del(k)
 	}
 
-	req.Method = m.method
+	if m.method != "" {
+		req.Method = m.method
+	}
 	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
 	req.ContentLength = int64(buf.Len())
 	req.Body = ioutil.NopCloser(buf)
@@ -52,9 +54,6 @@ func FromJSON(b []byte) (*Query2BodyModifier, error) {
 	tmpl, err := template.New("query2jsonbody_modifier").Parse(cfg.Template)
 	if err != nil {
 		return nil, err
-	}
-	if cfg.Method == "" {
-		cfg.Method = http.MethodPost
 	}
 
 	return &Query2BodyModifier{
