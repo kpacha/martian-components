@@ -1,5 +1,5 @@
-// Package modifier exposes a request modifier for generating parametrized queries
-// to an elastic search service
+// Package modifier exposes a request modifier for generating JSON encoded bodies
+// from the querystring params
 package modifier
 
 import (

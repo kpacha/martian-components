@@ -1,5 +1,5 @@
-// Package querystring2jsonbody registers a request modifier for generating parametrized queries
-// to an querystring2jsonbody search service
+// Package querystring2jsonbody registers a request modifier for generating JSON encoded bodies
+// from the querystring params
 package querystring2jsonbody
 
 import (
