@@ -1,4 +1,4 @@
-// Package querystring2body registers a request modifier for generating JSON encoded bodies
+// Package querystring2body registers a request modifier for generating bodies
 // from the querystring params
 package querystring2body
 
