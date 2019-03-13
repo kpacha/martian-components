@@ -1,4 +1,4 @@
-// Package modifier exposes a request modifier for generating JSON encoded bodies
+// Package modifier exposes a request modifier for generating bodies
 // from the querystring params
 package modifier
 
@@ -14,12 +14,14 @@ type Config struct {
 	KeysToExtract []string `json:"keys_to_extract"`
 	Template      string   `json:"template"`
 	Method        string   `json:"method"`
+	ContentType   string   `json:"content_type"`
 }
 
 type Query2BodyModifier struct {
 	keysToExtract []string
 	template      *template.Template
 	method        string
+	contentType   string
 }
 
 func (m *Query2BodyModifier) ModifyRequest(req *http.Request) error {
@@ -37,7 +39,11 @@ func (m *Query2BodyModifier) ModifyRequest(req *http.Request) error {
 	if m.method != "" {
 		req.Method = m.method
 	}
-	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
+	if m.contentType != "" {
+		req.Header.Set("Content-Type", m.contentType)
+	} else {
+		req.Header.Set("Content-Type", "application/json; charset=UTF-8")
+	}
 	req.ContentLength = int64(buf.Len())
 	req.Body = ioutil.NopCloser(buf)
 	req.URL.RawQuery = query.Encode()
@@ -51,7 +57,7 @@ func FromJSON(b []byte) (*Query2BodyModifier, error) {
 		return nil, err
 	}
 
-	tmpl, err := template.New("query2jsonbody_modifier").Parse(cfg.Template)
+	tmpl, err := template.New("query2body_modifier").Parse(cfg.Template)
 	if err != nil {
 		return nil, err
 	}

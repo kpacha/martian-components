@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func TestESQueryModifier(t *testing.T) {
+func TestQueryModifier(t *testing.T) {
 	cfg := `{"keys_to_extract":["foo","x"],"template":"{\"foo\":\"{{index .foo 0}}\",\"bar\":\"{{index .bar 0}}\",\"x\":\"{{index .x 0 }}\"}", "method":"POST"}`
 	modifier, err := FromJSON([]byte(cfg))
 	if err != nil {
@@ -84,7 +84,7 @@ func TestESQueryModifier(t *testing.T) {
 	}
 }
 
-func TestESQueryModifier_badDSL(t *testing.T) {
+func TestQueryModifier_badDSL(t *testing.T) {
 	if _, err := FromJSON([]byte(`"x"]}`)); err == nil {
 		t.Errorf("error expected")
 	}

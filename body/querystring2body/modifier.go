@@ -1,14 +1,14 @@
-// Package querystring2jsonbody registers a request modifier for generating JSON encoded bodies
+// Package querystring2body registers a request modifier for generating JSON encoded bodies
 // from the querystring params
-package querystring2jsonbody
+package querystring2body
 
 import (
 	"github.com/google/martian/parse"
-	"github.com/kpacha/martian-components/body/querystring2jsonbody/modifier"
+	"github.com/kpacha/martian-components/body/querystring2body/modifier"
 )
 
 func init() {
-	parse.Register("body.JSONFromQuerystring", FromJSON)
+	parse.Register("body.FromQuerystring", FromJSON)
 }
 
 func FromJSON(b []byte) (*parse.Result, error) {
