@@ -13,12 +13,7 @@ Import the required packages into your project and start using them as any other
 
 ## Using the modules as KrakenD plugins
 
-Compile the desired package with the plugin flag
-
-	$ go build -buildmode=plugin -o krakend-martian_json-schema.so ./krakend-plugin/json-schema
-	$ go build -buildmode=plugin -o krakend-martian_es.so ./krakend-plugin/elastic-search
-
-And place the plugins into your `plugin` folder, so the KrakenD can load them in runtime.
+**THIS IS A DEPRECATED EXPERIMENT. KRAKEND DOES NOT ACCEPT MARTIAN PLUGINS**
 
 ## List of components:
 
